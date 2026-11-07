@@ -1,5 +1,6 @@
 using System.Collections;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,20 +16,55 @@ public class DayManager : MonoBehaviour
     private Coroutine blinkCoroutine;
     public float blinkTime = 2f;
 
+    [Header("Customers")]
+    public GameObject customerPrefab;
+    public Transform customerSpawnPoint;
+
+    [Header("Patience")]
+    public TMP_Text patienceText;
+    public Image patienceImage;
+    public TMP_Text patienceFace;
+
+    [System.Serializable]
+    public class PatienceSetting 
+    {
+        public float minPercent;
+        public string face;
+        public Color faceColor;
+    }
+    public PatienceSetting[] patienceSettings;
+
+    [Header("Order Reciept")]
+    public GameObject orderReciept;
+    public GameObject orderCloseup;
+    public TMP_Text orderRecieptText;
+
+    [Header("Register")]
+    public Animator registerAnim;
+    public TMP_Text registerChargeText;
+
+    [Header("Build Counter")]
+    public GameObject buildCounter;
+    public Animator buildCounterAnim;
+
 
     void Start()
     {
         timer = 0f;
+        buildCounter.SetActive(false);
+        orderCloseup.SetActive(false);
+        orderReciept.SetActive(false);
     }
 
     void Update()
     {
         UpdateTimer();
+        TrySpawnCustomer();
     }
 
     // hours of operation 12pm - 9pm
     // displays time in 15min intervals
-    // each hour is 4 chunks x 9 hours = 28 text possible text updates
+    // each hour is 4 chunks x 9 hours = 28 possible text updates
     private void UpdateTimer()
     {
         timer += Time.deltaTime;
@@ -71,5 +107,73 @@ public class DayManager : MonoBehaviour
             textTimer.color = Color.white;
             yield return new WaitForSeconds(blinkTime);
         }
+    }
+
+    private void TrySpawnCustomer()
+    {
+        // if time isnt out
+        if (timer < timeInDay)
+        {
+            // if there are no other customers in scene
+            if(FindAnyObjectByType<CustomerBehaviour>() == null)
+            {
+                // spawn a customer
+                Instantiate(customerPrefab, customerSpawnPoint);
+            }
+        }
+    }
+
+    public void UpdatePatience(float patienceLeft)
+    {
+        patienceText.text = $"{(int)patienceLeft}%";
+
+        int index = 0;
+        if(patienceLeft < patienceSettings[0].minPercent)
+        {
+            index = 0;
+        }
+        else if(patienceLeft < patienceSettings[1].minPercent)
+        {
+            index = 1;
+        }
+        else
+        {
+            index = 2;
+        }
+
+        patienceImage.color = patienceSettings[index].faceColor;
+        patienceFace.text = patienceSettings[index].face;
+    }
+
+    // called by customer button
+    public void ConfirmOrder(float chargeAmount)
+    {
+        // add order reciept
+        orderReciept.SetActive(true);
+
+        // charge money
+        registerChargeText.text = $"{chargeAmount:F2}";
+        registerAnim.SetTrigger("charge");
+
+        // play sfx
+
+        // open build counter
+        buildCounter.SetActive(true);
+    }
+
+    public void OpenReciept()
+    {
+        orderCloseup.SetActive(true);
+
+        CustomerBehaviour currentCustomer = FindAnyObjectByType<CustomerBehaviour>();
+        if (currentCustomer != null)
+        {
+            orderRecieptText.text = currentCustomer.dialog;
+        }
+    }
+
+    public void CloseReciept()
+    {
+        orderCloseup.SetActive(false);
     }
 }
