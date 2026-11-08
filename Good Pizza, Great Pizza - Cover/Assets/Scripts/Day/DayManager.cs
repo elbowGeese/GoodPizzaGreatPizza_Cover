@@ -43,6 +43,10 @@ public class DayManager : MonoBehaviour
     public Animator registerAnim;
     public TMP_Text registerChargeText;
 
+    [Header("Money Management")]
+    public TMP_Text moneyText;
+    public float moneyAmount { get; private set; }
+
     [Header("Build Counter")]
     public GameObject buildCounter;
     public Animator buildCounterAnim;
@@ -50,6 +54,9 @@ public class DayManager : MonoBehaviour
 
     void Start()
     {
+        moneyAmount = PlayerPrefs.GetFloat("moneyAmount");
+        UpdateMoneyUI();
+
         timer = 0f;
         buildCounter.SetActive(false);
         orderCloseup.SetActive(false);
@@ -145,6 +152,11 @@ public class DayManager : MonoBehaviour
         patienceFace.text = patienceSettings[index].face;
     }
 
+    public void UpdateMoneyUI()
+    {
+        moneyText.text = $"{moneyAmount:F2}";
+    }
+
     // called by customer button
     public void ConfirmOrder(float chargeAmount)
     {
@@ -154,6 +166,8 @@ public class DayManager : MonoBehaviour
         // charge money
         registerChargeText.text = $"{chargeAmount:F2}";
         registerAnim.SetTrigger("charge");
+        moneyAmount += chargeAmount;
+        UpdateMoneyUI();
 
         // play sfx
 
