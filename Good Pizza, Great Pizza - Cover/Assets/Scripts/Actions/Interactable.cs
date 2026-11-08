@@ -2,11 +2,11 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class Interactable : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IPointerDownHandler
 {
     public static Interactable currentInteraction = null;
-    public bool equipOnDown = false;
 
     public Canvas canvas;
     public RectTransform rectTransform;
@@ -20,40 +20,43 @@ public class Interactable : MonoBehaviour, IPointerClickHandler, IPointerUpHandl
     // ON CLICK
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (currentInteraction == null && !equipOnDown) { currentInteraction = this; }
-        if (currentInteraction != this) return;
         ClickAction();
     }
 
     public virtual void ClickAction()
     {
-
+        if (currentInteraction != null)
+        {
+            currentInteraction.UpAction();
+            currentInteraction = this;
+        }
     }
 
     // ON MOUSE DOWN
     public void OnPointerDown(PointerEventData eventData)
     {
-        if(currentInteraction == null && equipOnDown) { currentInteraction = this; }
-        if (currentInteraction != this) return;
+        if(currentInteraction == null) { currentInteraction = this; }
+
         DownAction();
     }
 
     public virtual void DownAction()
     {
-
+        GameObject.FindWithTag("ScrollZone").GetComponent<ScrollRect>().enabled = false;
     }
 
     // ON MOUSE UP
     public void OnPointerUp(PointerEventData eventData)
     {
         if (currentInteraction != this) return;
-        if (equipOnDown) { currentInteraction = null; }
+        currentInteraction = null;
+
         UpAction();
     }
 
     public virtual void UpAction()
     {
-        
+        GameObject.FindWithTag("ScrollZone").GetComponent<ScrollRect>().enabled = true;
     }
 
     // UTILITY

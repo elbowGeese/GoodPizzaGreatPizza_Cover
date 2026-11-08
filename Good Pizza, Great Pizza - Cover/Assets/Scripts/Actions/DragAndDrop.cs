@@ -20,6 +20,11 @@ public class DragAndDrop : Interactable
         rectTransform.anchoredPosition = inputPos - followOffset;
     }
 
+    public override void ClickAction()
+    {
+        // override to do nothing
+    }
+
     public override void DownAction()
     {
         base.DownAction();
