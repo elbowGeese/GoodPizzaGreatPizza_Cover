@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - ScrollZone
+  - PizzaCrust
   layers:
   - Default
   - TransparentFX

@@ -23,38 +23,52 @@ public class Interactable : MonoBehaviour, IPointerClickHandler, IPointerUpHandl
         ClickAction();
     }
 
-    public virtual void ClickAction()
-    {
-        if (currentInteraction != null)
-        {
-            currentInteraction.UpAction();
-            currentInteraction = this;
-        }
-    }
-
     // ON MOUSE DOWN
     public void OnPointerDown(PointerEventData eventData)
     {
-        if(currentInteraction == null) { currentInteraction = this; }
-
         DownAction();
-    }
-
-    public virtual void DownAction()
-    {
-        GameObject.FindWithTag("ScrollZone").GetComponent<ScrollRect>().enabled = false;
     }
 
     // ON MOUSE UP
     public void OnPointerUp(PointerEventData eventData)
     {
-        if (currentInteraction != this) return;
-        currentInteraction = null;
-
         UpAction();
     }
 
+    public virtual void ClickAction()
+    {
+        if (currentInteraction != null)
+        {
+            currentInteraction.EndInteraction();
+        }
+
+        currentInteraction = this;
+    }
+
+    public virtual void DownAction()
+    {
+        // stop interacting with current 
+        if (currentInteraction != null) 
+        {
+            currentInteraction.EndInteraction(); 
+        }
+        
+        currentInteraction = this;
+    }
+
     public virtual void UpAction()
+    {
+        if (currentInteraction != this) return;
+
+        currentInteraction = null;
+    }
+
+    public virtual void BeginInteraction()
+    {
+        GameObject.FindWithTag("ScrollZone").GetComponent<ScrollRect>().enabled = false;
+    }
+
+    public virtual void EndInteraction()
     {
         GameObject.FindWithTag("ScrollZone").GetComponent<ScrollRect>().enabled = true;
     }
