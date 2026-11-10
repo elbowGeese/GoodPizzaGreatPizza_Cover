@@ -25,12 +25,10 @@ public class PizzaTopper : Interactable
 
     public override void DownAction()
     {
-        Debug.Log("PIZZA TOP 1");
         if (currentInteraction != null)
         {
             if (currentInteraction.gameObject.GetComponent<Topping>() != null)
             {
-                Debug.Log("PIZZA TOP 2");
                 BeginInteraction();
             }
         }

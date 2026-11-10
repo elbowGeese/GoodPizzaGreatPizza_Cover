@@ -10,6 +10,8 @@ public class DragAndDrop : Interactable
 
     Coroutine lerpBackRoutine;
     public float timeToLerpBack = 0.2f;
+
+    private Vector2 previousHome;
     
     void Update()
     {
@@ -46,6 +48,8 @@ public class DragAndDrop : Interactable
     {
         base.BeginInteraction();
 
+        previousHome = GetComponent<RectTransform>().anchoredPosition;
+
         if(lerpBackRoutine != null) { StopCoroutine(lerpBackRoutine); }
 
         Vector2 inputPos = GetInputPosition();
@@ -64,16 +68,16 @@ public class DragAndDrop : Interactable
         if (!rectHelp.CheckPizzaOverlapsStation(GetComponent<RectTransform>())) // automatically does something with pizza if true
         {
             // otherwise lerp it back
-            lerpBackRoutine = StartCoroutine(LerpBackToZero());
+            lerpBackRoutine = StartCoroutine(LerpBackToHome());
         }
     }
 
-    IEnumerator LerpBackToZero()
+    IEnumerator LerpBackToHome()
     {
         RectTransform rect = GetComponent<RectTransform>();
 
-        Vector2 startPos = rect.position;
-        Vector2 endPos = transform.parent.GetComponent<RectTransform>().position;
+        Vector2 startPos = rect.anchoredPosition;
+        Vector2 endPos = previousHome;
 
         float timer = 0f;
         while (timer < timeToLerpBack)
@@ -82,9 +86,9 @@ public class DragAndDrop : Interactable
             timer += Time.deltaTime;
 
             Vector2 step = Vector2.Lerp(startPos, endPos, timer / timeToLerpBack);
-            rect.position = step;
+            rect.anchoredPosition = step;
         }
 
-        rect.position = endPos;
+        rect.anchoredPosition = endPos;
     }
 }

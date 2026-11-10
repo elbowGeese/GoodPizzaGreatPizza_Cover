@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PizzaConveyor : DropPoint
 {
@@ -17,8 +18,11 @@ public class PizzaConveyor : DropPoint
     {
         pizza.SetParent(conveyorRect);
 
-        // deactivate drag and drop on pizza
+        // deactivate drag and drop on pizza and toppers
         pizza.gameObject.GetComponent<DragAndDrop>().enabled = false;
+        PizzaTopper pt = pizza.gameObject.GetComponentInChildren<PizzaTopper>();
+        pt.enabled = false;
+        pt.gameObject.GetComponent<Image>().raycastTarget = false;
 
         // lerp to y
         Vector2 startPos = pizza.position;
@@ -60,7 +64,10 @@ public class PizzaConveyor : DropPoint
             pizza.anchoredPosition = step;
 
             // cook
-
+            if(moveTimer / moveTime >= 0.5f) // halfway through
+            {
+                pizza.GetComponent<Animator>().SetTrigger("isCooked");
+            }
         }
         pizza.anchoredPosition = endPos;
 
