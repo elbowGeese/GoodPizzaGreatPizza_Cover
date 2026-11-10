@@ -1,6 +1,5 @@
 using System.Collections;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -173,6 +172,7 @@ public class DayManager : MonoBehaviour
 
         // open build counter
         buildCounter.SetActive(true);
+        buildCounterAnim.SetBool("isOpen", true);
     }
 
     public void OpenReciept()
